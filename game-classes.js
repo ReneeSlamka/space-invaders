@@ -1,6 +1,6 @@
 
 
-function spriteFactory() {
+function SpriteFactory() {
 
     var Sprite = function(lives, xCoord, yCoord, dieFunc) {
         this.lives = lives;
@@ -39,10 +39,6 @@ function spriteFactory() {
             alert("Y Coordinate is invalid");
         }
     };
-
-    /*Sprite.prototype.drawSprite = function(img, canvasController, xCoord, yCoord) {
-        canvasController.drawImage(img, xCoord, yCoord, 50, 50);
-    };*/
 
     var Player = function (numLives, xCoord, yCoord) {
         Sprite.call(this, numLives, xCoord, yCoord, null);
