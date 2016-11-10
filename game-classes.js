@@ -1,5 +1,3 @@
-var CANVAS_WIDTH = 800;
-var CANVAS_HEIGHT = 600;
 
 
 function spriteFactory() {
@@ -42,9 +40,9 @@ function spriteFactory() {
         }
     };
 
-    Sprite.prototype.drawSprite = function(img, canvasController, xCoord, yCoord) {
+    /*Sprite.prototype.drawSprite = function(img, canvasController, xCoord, yCoord) {
         canvasController.drawImage(img, xCoord, yCoord, 50, 50);
-    };
+    };*/
 
     var Player = function (numLives, xCoord, yCoord) {
         Sprite.call(this, numLives, xCoord, yCoord, null);
@@ -66,18 +64,4 @@ function spriteFactory() {
         alien: Alien
     };
 
-}
-
-
-
-
-//** Add equal sign? **
-
-
-function spriteDie() {
-    if (this.type === "alien") {
-        //remove this alien from the screen
-    } else if (this.type === "player") {
-        //tell the player they've died and end game
-    }
 }
