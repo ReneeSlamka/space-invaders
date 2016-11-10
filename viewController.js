@@ -27,10 +27,16 @@ function ViewController() {
         canvasController.drawImage(img,x,y,width,height);
     }
 
+    function eraseImage(bgColour,x,y,width,height) {
+        canvasController.fillStyle = bgColour;
+        canvasController.fillRect(x,y,width,height);
+    }
+
     return {
         //initCanvasController: initCanvasController,
         getCanvasHeight: getCanvasHeight,
         getCanvasWidth: getCanvasWidth,
-        drawImg: drawImage
+        drawImg: drawImage,
+        eraseImg: eraseImage
     };
 }

@@ -24,18 +24,20 @@ function SpriteFactory() {
         return this.yCoord;
     };
 
-    Sprite.prototype.setXCoord = function(xCoord) {
-        if (xCoord > 0 && xCoord < CANVAS_WIDTH ) {
+    Sprite.prototype.setXCoord = function(xCoord, canvasWidth) {
+        if (xCoord > 0 && xCoord < canvasWidth ) {
             this.xCoord = xCoord;
         } else {
-            alert("X Coordinate is invalid");
+            //Remove this later
+            //alert("X Coordinate is invalid");
         }
     };
 
-    Sprite.prototype.setYCoord = function(yCoord) {
+    Sprite.prototype.setYCoord = function(yCoord, canvasHeight) {
         if (yCoord > 0 && yCoord < CANVAS_HEIGHT) {
             this.yCoord = yCoord;
         } else {
+            //Remove this later
             alert("Y Coordinate is invalid");
         }
     };

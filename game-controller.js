@@ -2,6 +2,13 @@
 function GameController() {
 
     var NUM_ALIENS = 3;
+    var MOVE_LEFT_KEY_CODE = 37;
+    var MOVE_RIGHT_KEY_CODE = 39;
+    var P_WIDTH = 50;
+    var P_HEIGHT = 50;
+    var BG_COLOUR = "#000000";
+
+
     var characterFactory;
     var viewController;
     var playerImg;
@@ -31,13 +38,38 @@ function GameController() {
         }
 
         //draw sprites
-        viewController.drawImg(playerImg,player.getXCoord(),player.getYCoord(),50,50);
+        viewController.drawImg(playerImg,player.getXCoord(),player.getYCoord(),P_WIDTH,P_HEIGHT);
         //viewController.drawImg(playerImg,400,400,50,50);
         for (var i = 0; i < NUM_ALIENS; i++) {
             var tempX = listAliens[i].getXCoord();
             var tempY = listAliens[i].getYCoord();
-            viewController.drawImg(alienImg,tempX,tempY,30,30);
+            viewController.drawImg(alienImg,tempX,tempY,70,48);
         }
+
+        //add key listeners for player controls
+        document.addEventListener("keydown", movePlayer, false);
+    }
+
+    function movePlayer(e) {
+        var keyCode = e.keyCode;
+        var xCoord = player.getXCoord();
+        var yCoord = player.getYCoord();
+
+        viewController.eraseImg(BG_COLOUR,xCoord,yCoord,playerImg.width, playerImg.height);
+
+        if (keyCode == MOVE_LEFT_KEY_CODE) {
+            xCoord-=10;
+        } else if (keyCode == MOVE_RIGHT_KEY_CODE) {
+            xCoord+=10;
+        } else {
+            //do nothing?
+        }
+
+        player.setXCoord(xCoord, viewController.getCanvasWidth());
+        viewController.drawImg(playerImg,xCoord,player.getYCoord(),P_WIDTH,P_HEIGHT);
+    }
+
+    function moveAliens() {
 
     }
 
