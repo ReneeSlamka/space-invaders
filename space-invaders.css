@@ -1,0 +1,17 @@
+#game-canvas {
+    /*width: 800px;*/
+    /*height: 600px;*/
+    background-color: rgba(0,0,0,0.95);
+}
+
+#alien-img {
+    width: 80px;
+    height: 80px;
+    display: block;
+}
+
+#player-img {
+    width: 80px;
+    height: 80px;
+    display: inline-block;
+}
