@@ -6,13 +6,20 @@ function GameController() {
     var MOVE_RIGHT_KEY_CODE = 39;
     var P_WIDTH = 50;
     var P_HEIGHT = 50;
+    var A_WIDTH = 70;
+    var A_HEIGHT = 50;
     var BG_COLOUR = "#000000";
+
+    var PAUSED = "paused";
+    var PLAYING = "playing";
+    var gameState = PAUSED;
 
 
     var characterFactory;
     var viewController;
     var playerImg;
     var alienImg;
+    var alienMovementTimer
 
     var player;
     var listAliens = [];
@@ -39,18 +46,30 @@ function GameController() {
 
         //draw sprites
         viewController.drawImg(playerImg,player.getXCoord(),player.getYCoord(),P_WIDTH,P_HEIGHT);
-        //viewController.drawImg(playerImg,400,400,50,50);
-        for (var i = 0; i < NUM_ALIENS; i++) {
-            var tempX = listAliens[i].getXCoord();
-            var tempY = listAliens[i].getYCoord();
+        for (var j = 0; j < NUM_ALIENS; j++) {
+            var tempX = listAliens[j].getXCoord();
+            var tempY = listAliens[j].getYCoord();
             viewController.drawImg(alienImg,tempX,tempY,70,48);
         }
 
-        //add key listeners for player controls
+        //add key listener for player controls
         document.addEventListener("keydown", movePlayer, false);
+
+        //add pause function to pause button
+        var pauseButton = document.getElementById("pause-button");
+        pauseButton.addEventListener("click",pause);
+        //add start function to start button
+        var startButton = document.getElementById("start-button");
+        startButton.addEventListener("click",start);
+
     }
 
     function movePlayer(e) {
+
+        if (gameState === PAUSED) {
+            return;
+        }
+
         var keyCode = e.keyCode;
         var xCoord = player.getXCoord();
         var yCoord = player.getYCoord();
@@ -70,19 +89,36 @@ function GameController() {
     }
 
     function moveAliens() {
-
+        for (var i = 0; i < NUM_ALIENS; i++) {
+            var tempX = listAliens[i].getXCoord();
+            var tempY = listAliens[i].getYCoord();
+            viewController.eraseImg("#000000",tempX,tempY,alienImg.width,alienImg.height);
+            tempY+=5;
+            listAliens[i].setYCoord(tempY, viewController.getCanvasHeight());
+            viewController.drawImg(alienImg,tempX,tempY,A_WIDTH,A_HEIGHT);
+        }
     }
 
     function play() {}
 
-    function pause() {}
+    function pause() {
+        clearInterval(alienMovementTimer);
+        gameState = PAUSED;
+    }
+
+    function start() {
+        //start timer for alien movement
+        if (gameState != PLAYING) {
+            alienMovementTimer = setInterval(moveAliens, 2000);
+            gameState = PLAYING;
+        }
+    }
 
     function restart() {}
 
     return {
         init: init,
         play: play,
-        pause: pause,
         restart: restart
     };
 }
@@ -92,9 +128,7 @@ var spaceInvaders;
 window.onload = function() {
     spaceInvaders = new GameController();
     spaceInvaders.init();
-    //player.drawSprite(playerImg, canvasController, player.getXCoord(), player.getYCoord());
-    //canvasController.drawImage(alienImg, 200, 200);
-    //canvasController.drawImage(playerImg, 100,100,50,50);
+
 };
 
 

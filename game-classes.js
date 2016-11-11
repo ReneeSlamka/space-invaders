@@ -34,7 +34,7 @@ function SpriteFactory() {
     };
 
     Sprite.prototype.setYCoord = function(yCoord, canvasHeight) {
-        if (yCoord > 0 && yCoord < CANVAS_HEIGHT) {
+        if (yCoord > 0 && yCoord < canvasHeight) {
             this.yCoord = yCoord;
         } else {
             //Remove this later
