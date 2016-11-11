@@ -15,11 +15,8 @@ function GameController() {
     var gameState = PAUSED;
 
 
-    var characterFactory;
-    var viewController;
-    var playerImg;
-    var alienImg;
-    var alienMovementTimer
+    var characterFactory, viewController, alienMovementTimer;
+    var playerImg, alienImg;
 
     var player;
     var listAliens = [];
@@ -72,20 +69,23 @@ function GameController() {
 
         var keyCode = e.keyCode;
         var xCoord = player.getXCoord();
+        var newXCoord = xCoord;
         var yCoord = player.getYCoord();
 
-        viewController.eraseImg(BG_COLOUR,xCoord,yCoord,playerImg.width, playerImg.height);
-
         if (keyCode == MOVE_LEFT_KEY_CODE) {
-            xCoord-=10;
+            newXCoord-=10;
         } else if (keyCode == MOVE_RIGHT_KEY_CODE) {
-            xCoord+=10;
+            newXCoord+=10;
         } else {
             //do nothing?
         }
 
-        player.setXCoord(xCoord, viewController.getCanvasWidth());
-        viewController.drawImg(playerImg,xCoord,player.getYCoord(),P_WIDTH,P_HEIGHT);
+        player.setXCoord(newXCoord, viewController.getCanvasWidth(),P_WIDTH);
+
+        if (newXCoord === player.getXCoord()) {
+            viewController.eraseImg(BG_COLOUR,xCoord,yCoord,playerImg.width, playerImg.height);
+            viewController.drawImg(playerImg,newXCoord,player.getYCoord(),P_WIDTH,P_HEIGHT);
+        } //else hit a boundary so no movement - don't redraw
     }
 
     function moveAliens() {
@@ -102,8 +102,10 @@ function GameController() {
     function play() {}
 
     function pause() {
-        clearInterval(alienMovementTimer);
-        gameState = PAUSED;
+        if (gameState != PAUSED) {
+            clearInterval(alienMovementTimer);
+            gameState = PAUSED;
+        }
     }
 
     function start() {
@@ -130,8 +132,3 @@ window.onload = function() {
     spaceInvaders.init();
 
 };
-
-
-
-
-

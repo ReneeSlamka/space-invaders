@@ -24,12 +24,14 @@ function SpriteFactory() {
         return this.yCoord;
     };
 
-    Sprite.prototype.setXCoord = function(xCoord, canvasWidth) {
-        if (xCoord > 0 && xCoord < canvasWidth ) {
+    Sprite.prototype.setXCoord = function(xCoord, canvasWidth, imgWidth) {
+        if (xCoord >= 0 && xCoord <= canvasWidth - imgWidth) {
             this.xCoord = xCoord;
+            return true;
         } else {
             //Remove this later
             //alert("X Coordinate is invalid");
+            return false;
         }
     };
 
