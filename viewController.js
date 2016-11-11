@@ -22,9 +22,12 @@ function ViewController() {
     })();
 
     function drawImage(img,x,y,width,height) {
-        //maybe force init call here?
-        //other canvasController may be undefined
         canvasController.drawImage(img,x,y,width,height);
+    }
+
+    function drawBullet(bulletColor,x,y,width,height) {
+        canvasController.fillStyle = bulletColor;
+        canvasController.fillRect(x,y,width,height);
     }
 
     function eraseImage(bgColour,x,y,width,height) {
@@ -37,6 +40,7 @@ function ViewController() {
         getCanvasHeight: getCanvasHeight,
         getCanvasWidth: getCanvasWidth,
         drawImg: drawImage,
+        drawBullet: drawBullet,
         eraseImg: eraseImage
     };
 }
