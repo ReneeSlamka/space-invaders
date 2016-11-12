@@ -14,7 +14,7 @@ function GameController() {
 
     var KeyCode = {left: 37, right: 39, shoot: 32};
     var Direction = {left: "left", right: "right", up: "up", down: "down"};
-    var State = {paused: "paused", playing: "playing"}
+    var State = {paused: "paused", playing: "playing", won: "won", lost: "lost"};
     var gameState;
 
 
@@ -51,18 +51,20 @@ function GameController() {
         for (var j = 0; j < NUM_ALIENS; j++) {
             var tempX = listAliens[j].getXCoord();
             var tempY = listAliens[j].getYCoord();
-            viewController.drawImg(alienImg,tempX,tempY,70,48);
+            viewController.drawImg(alienImg,tempX,tempY,ALIEN_W,ALIEN_H);
         }
 
         //add key listener for player controls
         document.addEventListener("keydown", controlPlayer, false);
 
-        //add pause function to pause button
-        var pauseButton = document.getElementById("pause-button");
-        pauseButton.addEventListener("click",pause);
         //add start function to start button
         var startButton = document.getElementById("start-button");
         startButton.addEventListener("click",start);
+        //add pause function to pause button
+        var pauseButton = document.getElementById("pause-button");
+        pauseButton.addEventListener("click",pause);
+        //add restart button
+        var startButton = document.getElementById("restart-button");
 
         gameState = State.paused;
     }
@@ -120,7 +122,9 @@ function GameController() {
     }
 
     function moveBullets() {
-        shiftGroupObjects(listBullets,BULLET_W,BULLET_H,5,Direction.up);
+        shiftGroupObjects(listBullets,BULLET_W,BULLET_H,2,Direction.up);
+        //check for collision with aliens
+        checkBulletCollision();
         for (var i = 0; i < listBullets.length; i++) {
             var bullet = listBullets[i];
             if (bullet.getYCoord() == 0 - bullet.height) {
@@ -128,6 +132,30 @@ function GameController() {
                 listBullets.splice(i,1);
             } else {
                 viewController.drawBullet(BULLET_COLOUR,bullet.getXCoord(),bullet.getYCoord(),BULLET_W,BULLET_H);
+            }
+        }
+    }
+
+    function checkBulletCollision() {
+        for (var i = 0; i < listBullets.length; i++) {
+            for (var j = 0; j < listAliens.length; j++) {
+                var bulletXCoord = listBullets[i].getXCoord();
+                var alienXCoord = listAliens[j].getXCoord();
+
+                if (alienXCoord <= bulletXCoord && bulletXCoord <= alienXCoord + ALIEN_W) {
+                    var bulletYCoord = listBullets[i].getYCoord();
+                    var alienYCoord = listAliens[j].getYCoord();
+                    if (alienYCoord <= bulletYCoord && bulletYCoord <= alienYCoord + ALIEN_H) {
+                        //remove bullet and alien from lists
+                        listBullets.splice(i,1);
+                        listAliens.splice(j,1);
+                        //erase both objects
+                        viewController.eraseImg(BG_COLOUR,alienXCoord,alienYCoord,ALIEN_W,ALIEN_H);
+                        //bullet should already be erased
+                        //viewController.eraseImg(BG_COLOUR,bulletXCoord,bulletYCoord,BULLET_W,BULLET_H);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -167,8 +195,8 @@ function GameController() {
     function start() {
         //start timer for alien movement
         if (gameState != State.playing) {
-            alienMovementTimer = setInterval(moveAliens,2000);
-            bulletMovementTimer = setInterval(moveBullets,70);
+            alienMovementTimer = setInterval(moveAliens,1200);
+            bulletMovementTimer = setInterval(moveBullets,10);
             gameState = State.playing;
         }
     }
