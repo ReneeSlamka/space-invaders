@@ -19,11 +19,8 @@ function SpriteFactory() {
     GameObject.prototype.setXCoord = function(xCoord, canvasWidth, imgWidth) {
         if (xCoord >= 0 && xCoord <= canvasWidth - imgWidth) {
             this.xCoord = xCoord;
-            return true;
         } else {
-            //Remove this later
-            //alert("X Coordinate is invalid");
-            return false;
+            console.log(this.toString() + " X coordinate is invalid");
         }
     };
 
@@ -31,8 +28,7 @@ function SpriteFactory() {
         if (yCoord > 0 && yCoord < canvasHeight) {
             this.yCoord = yCoord;
         } else {
-            //Remove this later
-            alert("Y Coordinate is invalid");
+            console.log(this.toString() + " Y coordinate is invalid");
         }
     };
 
@@ -50,8 +46,7 @@ function SpriteFactory() {
         if (yCoord >= 0 - this.height && yCoord < canvasHeight) {
             this.yCoord = yCoord;
         } else {
-            //Remove this later
-            alert("Y Coordinate is invalid");
+            console.log(this.toString() + " Y coordinate is invalid");
         }
     };
 
