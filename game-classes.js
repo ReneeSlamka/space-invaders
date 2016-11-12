@@ -55,7 +55,6 @@ function SpriteFactory() {
         }
     };
 
-
     //The basic game character class, parent to Alien and Player
     var Sprite = function(lives, xCoord, yCoord, dieFunc) {
         GameObject.call(this, xCoord, yCoord);
