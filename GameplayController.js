@@ -1,10 +1,14 @@
-
+/*
+ * Helper object that implements all game logic and updating the screen
+ * (via the ViewController object). Contains and controls all actors in
+ * the game.
+ */
 function GameplayController() {
 
     var StateEnum = {paused: "paused", playing: "playing", won: "won", lost: "lost"};
     var KeyCode = {left: 37, right: 39, shoot: 32};
     var Direction = {left: "left", right: "right", up: "up", down: "down"};
-    var vc,objectFactory,gameSettings;
+    var viewController,objectFactory,gameSettings;
 
     var player;
     var aliens;
@@ -16,16 +20,17 @@ function GameplayController() {
         aliens = [];
         playerBullets = [];
         alienBullets = [];
-        vc = ViewController();
+        viewController = ViewController();
         objectFactory = ObjectFactory();
         gameSettings = settings;
 
         //clear canvas
-        vc.eraseImg(settings.bgColour,0,0,vc.getCanvasWidth(),vc.getCanvasHeight());
+        viewController.eraseImg(settings.bgColour,0,0,viewController.getCanvasWidth(),
+            viewController.getCanvasHeight());
 
         //create player
-        var playerX = vc.getCanvasWidth()/2 - playerImg.width/2;
-        var playerY = vc.getCanvasHeight() - playerImg.height;
+        var playerX = viewController.getCanvasWidth()/2 - playerImg.width/2;
+        var playerY = viewController.getCanvasHeight() - playerImg.height;
         var playerW = gameSettings.playerWidth;
         var playerH = gameSettings.playerHeight;
 
@@ -40,11 +45,11 @@ function GameplayController() {
         }
 
         //draw sprites
-        vc.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
+        viewController.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
         for (var j = 0; j < gameSettings.numAliens; j++) {
             var tempX = aliens[j].getX();
             var tempY = aliens[j].getY();
-            vc.drawImg(alienImg,tempX,tempY,alienW,alienH);
+            viewController.drawImg(alienImg,tempX,tempY,alienW,alienH);
         }
     }
 
@@ -71,11 +76,11 @@ function GameplayController() {
             newXCoord += 10;
         }
 
-        player.setX(newXCoord,vc.getCanvasWidth(),player.getWidth());
+        player.setX(newXCoord,viewController.getCanvasWidth(),player.getWidth());
 
         if (newXCoord === player.getX()) {
-            vc.eraseImg(gameSettings.bgColour,xCoord,yCoord,player.width,player.height);
-            vc.drawImg(player.getImg(),newXCoord,player.getY(),player.width,player.height);
+            viewController.eraseImg(gameSettings.bgColour,xCoord,yCoord,player.width,player.height);
+            viewController.drawImg(player.getImg(),newXCoord,player.getY(),player.width,player.height);
         } //else hit a boundary so no movement - don't redraw
     }
 
@@ -86,10 +91,10 @@ function GameplayController() {
 
         //update the positions of all bullets
         playerBullets.forEach(function(bullet) {
-            bullet.move(2,Direction.up,vc.getCanvasWidth(),vc.getCanvasHeight());
+            bullet.move(2,Direction.up,viewController.getCanvasWidth(),viewController.getCanvasHeight());
         });
         alienBullets.forEach(function(bullet) {
-            bullet.move(2,Direction.down,vc.getCanvasWidth(),vc.getCanvasHeight());
+            bullet.move(2,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
         });
 
         //check for collision between player bullets and aliens
@@ -109,7 +114,7 @@ function GameplayController() {
             var y = objects[i].getY();
             var width = objects[i].getWidth();
             var height = objects[i].getHeight();
-            vc.eraseImg(gameSettings.bgColour,x,y,width,height);
+            viewController.eraseImg(gameSettings.bgColour,x,y,width,height);
         }
     }
 
@@ -119,7 +124,8 @@ function GameplayController() {
             if ((direction === Direction.up) && (bullet.getY() == 0 - bullet.height)) {
                 //Bullet has gone off top of canvas, delete it
                 playerBullets.splice(i,1);
-            } else if ((direction == Direction.down) && (bullet.getY() > vc.getCanvasHeight + bullet.getHeight())) {
+            } else if ((direction == Direction.down) &&
+                (bullet.getY() > viewController.getCanvasHeight + bullet.getHeight())) {
                 //Bullet has gone off bottom of canvas, delete it
                 playerBullets.splice(i,1);
             } else {
@@ -127,7 +133,7 @@ function GameplayController() {
                 var y = bullet.getY();
                 var width = bullet.getWidth();
                 var height = bullet.getHeight();
-                vc.drawBullet(gameSettings.bulletColour,x,y,width,height);
+                viewController.drawBullet(gameSettings.bulletColour,x,y,width,height);
             }
         }
     }
@@ -158,13 +164,13 @@ function GameplayController() {
                         //remove bullet from list and erase it
                         var bulletW = attackerBullets[bulletCounter].getWidth();
                         var bulletH = attackerBullets[bulletCounter].getHeight();
-                        vc.eraseImg(gameSettings.bgColour,bulletX,bulletY,bulletW,bulletH);
+                        viewController.eraseImg(gameSettings.bgColour,bulletX,bulletY,bulletW,bulletH);
                         attackerBullets.splice(bulletCounter,1);
 
                         //if target was fatally hit remove it from screen
                         //todo: this may not work for both player and aliens
                         if (!target[targetCounter].isAlive()) {
-                            vc.eraseImg(gameSettings.bgColour, targetX, targetY, targetW, targetH);
+                            viewController.eraseImg(gameSettings.bgColour, targetX, targetY, targetW, targetH);
                             target.splice(targetCounter, 1);
                             break; //bullet can't kill more than one alien
                         } //else do nothing for now (may alter picture later to show damage)
@@ -188,11 +194,11 @@ function GameplayController() {
     }
 
     function win() {
-        vc.writeText("Congrats! You've won!","green","30px Comic Sans MS","center");
+        viewController.writeText("Congrats! You've won!","green","30px Comic Sans MS","center");
     }
 
     function lose() {
-        vc.writeText("Sorry, you've lost!","red","30px Comic Sans MS","center");
+        viewController.writeText("Sorry, you've lost!","red","30px Comic Sans MS","center");
     }
 
     function groupAlienShoot() {
@@ -209,8 +215,8 @@ function GameplayController() {
         eraseGroupObjects(aliens);
         for(var i = 0; i < aliens.length; i++) {
             var alien = aliens[i];
-            alien.move(5,Direction.down,vc.getCanvasWidth(),vc.getCanvasHeight());
-            vc.drawImg(alien.getImg(),alien.getX(),alien.getY(),alien.getWidth(),alien.getHeight());
+            alien.move(5,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
+            viewController.drawImg(alien.getImg(),alien.getX(),alien.getY(),alien.getWidth(),alien.getHeight());
         }
     }
 

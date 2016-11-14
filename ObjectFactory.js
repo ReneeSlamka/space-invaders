@@ -1,4 +1,8 @@
-
+/*
+ * Helper object that implements a type hierarchy, defines the
+ * different game objects, and provides constructor functions
+ * for the said objects.
+ */
 function ObjectFactory() {
 
     //Todo: figure out better way to share this enum

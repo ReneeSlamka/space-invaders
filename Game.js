@@ -1,4 +1,10 @@
+/*
+ * "Master" object that contains all properties of the game and
+ * manages button functions and timers. The only object that is made created
+ * in the global scope.
+ */
 function Game() {
+    //default values for settings
     var settings = {
         bgColour: "#000000",
         bulletColour: "#ffffff",
@@ -13,7 +19,7 @@ function Game() {
         alienShootMode: "group"
     };
     var gameState;
-    var characterFactory, viewController, gameplayController;
+    var gameplayController;
     var alienMovementTimer, bulletMovementTimer, alienShootTimer;
     var playerImg, alienImg;
 
@@ -23,25 +29,21 @@ function Game() {
         playerImg = document.getElementById("player-img");
         alienImg = document.getElementById("alien-img");
 
-        //create game controller
+        //create game controller and setup the game
         gameplayController = GameplayController();
-        //setup the game
         gameplayController.setupGame(playerImg,alienImg,settings);
+        gameState = gameplayController.State.paused;
 
         //add key listener for player controls
         document.addEventListener("keydown", keyPress, false);
 
-        //add start function to start button
+        //add start, stop and reset functions to their respective buttons
         var startButton = document.getElementById("start-button");
         startButton.addEventListener("click",play);
-        //add pause function to pause button
-        var pauseButton = document.getElementById("pause-button");
-        pauseButton.addEventListener("click",pause);
-        //add restart button
+        var stopButton = document.getElementById("pause-button");
+        stopButton.addEventListener("click",stop);
         var restartButton = document.getElementById("restart-button");
         restartButton.addEventListener("click",reset);
-
-        gameState = gameplayController.State.paused;
     }
 
     function keyPress(e) {
@@ -50,7 +52,7 @@ function Game() {
         }
     }
 
-    function pause() {
+    function stop() {
         if (gameState != gameplayController.State.paused) {
             clearInterval(alienMovementTimer);
             clearInterval(bulletMovementTimer);
@@ -60,7 +62,7 @@ function Game() {
     }
 
     function play() {
-        //start timer for alien movement
+        //start timers for bullet movement, alien movement and alien shooting
         if (gameState != gameplayController.State.playing) {
             alienMovementTimer = setInterval(gameplayController.moveAliens,1200);
             alienShootTimer = setInterval(gameplayController.groupAlienShoot, 5000);
@@ -68,10 +70,10 @@ function Game() {
                 gameplayController.moveBullets();
                 gameState = gameplayController.checkWinLoseStatus();
                 if(gameState === gameplayController.State.won) {
-                    pause();
+                    stop();
                     gameplayController.win();
                 } else if (gameState === gameplayController.State.lost) {
-                    pause();
+                    stop();
                     gameplayController.lose();
                 }
             },10);
@@ -80,11 +82,7 @@ function Game() {
     }
 
     function reset() {
-        //stop timers
-        clearInterval(alienMovementTimer);
-        clearInterval(bulletMovementTimer);
-        clearInterval(alienShootTimer);
-        gameState = gameplayController.State.paused;
+        stop();
         gameplayController.setupGame(playerImg,alienImg,settings);
     }
 

@@ -1,4 +1,7 @@
-
+/*
+ * Helper object that manages the different drawing
+ * functions for the game canvas.
+ */
 function ViewController() {
     var CANVAS_WIDTH = 600;
     var CANVAS_HEIGHT = 600;
