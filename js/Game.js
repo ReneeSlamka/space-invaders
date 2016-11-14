@@ -38,12 +38,12 @@ function Game() {
         document.addEventListener("keydown", keyPress, false);
 
         //add start, stop and reset functions to their respective buttons
-        var startButton = document.getElementById("start-button");
-        startButton.addEventListener("click",play);
-        var stopButton = document.getElementById("pause-button");
+        var playButton = document.getElementById("play-button");
+        playButton.addEventListener("click",play);
+        var stopButton = document.getElementById("stop-button");
         stopButton.addEventListener("click",stop);
-        var restartButton = document.getElementById("restart-button");
-        restartButton.addEventListener("click",reset);
+        var resetButton = document.getElementById("reset-button");
+        resetButton.addEventListener("click",reset);
     }
 
     function keyPress(e) {

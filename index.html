@@ -1,17 +1,67 @@
 <html>
     <head>
-        <link rel="stylesheet" href="space-invaders.css">
-        <script type="application/javascript" src="ViewController.js"></script>
-        <script type="application/javascript" src="GameplayController.js"></script>
-        <script type="application/javascript" src="ObjectFactory.js"></script>
-        <script type="application/javascript" src="Game.js"></script>
+        <link rel="stylesheet" href="css/space-invaders.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script type="application/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="application/javascript" src="js/ViewController.js"></script>
+        <script type="application/javascript" src="js/GameplayController.js"></script>
+        <script type="application/javascript" src="js/ObjectFactory.js"></script>
+        <script type="application/javascript" src="js/Game.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400,600|Ubuntu+Condensed" rel="stylesheet">
     </head>
     <body>
-        <button id="start-button" type="button">Play</button>
-        <button id="pause-button" type="button">Pause</button>
-        <button id="restart-button" type="button">Restart</button>
-        <img id="alien-img" src="space_invaders.jpg">
-        <img id="player-img" src="spaceship.jpg">
-        <canvas id="game-canvas"></canvas>
+        <nav id="ppi-nav">
+            <div class="container">
+                <header>Pet Peeve Invaders</header>
+            </div>
+        </nav>
+        <div id="ppi-bg-container">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-7 text-center">
+                        <div class="row">
+                            <canvas id="game-canvas"></canvas>
+                        </div>
+                        <div class="row" id="control-button-panel">
+                            <button id="play-button" type="button">Play</button>
+                            <button id="stop-button" type="button">Stop</button>
+                            <button id="reset-button" type="button">Reset</button>
+                            <div class="game-info-section">
+                                <label>Level</label>
+                                <p>1</p>
+                            </div>
+                            <div class="game-info-section">
+                                <label>Score</label>
+                                <p id="score">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5" id="game-content-column">
+                        <div>
+                            <header>
+                                Welcome to Pet Peeve Invaders!
+                            </header>
+                            <p>
+                                A remake of the arcade classic Space Invaders, but with a
+                                fun twist: YOU get to choose the face of your opponent.
+                                That's right, if something's been grinding your gears lately,
+                                bring yourself a little peace of mind by eviscerating it with
+                                virtual lazer blast in an epic galaxy game!
+                            </p>
+                            <div class="img-selection-section">
+                                <img id="alien-img" src="img/space_invaders.jpg">
+                                <label>Picture</label>
+                                <input>
+                            </div>
+                            <div class="img-selection-section">
+                                <img id="player-img" src="img/spaceship.jpg">
+                                <label>Picture</label>
+                                <input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

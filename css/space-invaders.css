@@ -1,0 +1,135 @@
+
+#ppi-bg-container {
+    background-image: url("../img/universe.jpg");
+    background-size: cover;
+    height: 100%;
+    padding-top: 220px;
+}
+
+#ppi-nav {
+    position: absolute;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+}
+
+#ppi-nav header {
+    text-align: center;
+    font-size: 50px;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-family: individigital, aliensAndCows, sans-serif;
+}
+
+#game-canvas {
+    -webkit-box-shadow: 0px 0px 26px 21px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 26px 21px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 26px 21px rgba(0,0,0,0.75);
+}
+
+#control-button-panel {
+    margin-top: 40px;
+}
+
+#control-button-panel * {
+    display: inline-block;
+}
+
+.game-info-section {
+    color: white;
+    font-size: 18px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#control-button-panel button {
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    color: white;
+    border: 0px;
+}
+
+#play-button {
+    background-color: green;
+}
+
+#play-button:hover {
+    background-color: darkgreen;
+}
+
+#stop-button {
+    background-color: red;
+
+}
+
+#stop-button:hover {
+    background-color: darkred;
+}
+
+#reset-button {
+    background-color: dodgerblue;
+}
+
+#reset-button:hover {
+    background-color: royalblue;
+}
+
+#game-content-column {
+    color: white;
+    padding-left: 45px;
+}
+
+#game-content-column > div {
+    padding-top: 20px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    background-color: rgba(0,0,0,0.5);
+}
+
+#game-content-column header {
+    font-size: 36px;
+    font-family: 'Titillium Web', aliensAndCows, sans-serif;
+}
+
+#game-content-column  p {
+    font-family: 'Titillium Web', 'Ubuntu Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    margin-top: 30px;
+}
+
+.img-selection-section * {
+    display: inline-block;
+}
+
+#alien-img {
+    width: 50px;
+    height: 50px;
+}
+
+#player-img {
+    width: 50px;
+    height: 50px;
+}
+
+
+@font-face {
+    font-family: starJedi;
+    src: url("../fonts/StarJediRounded.ttf");
+}
+
+@font-face {
+    font-family: aliensAndCows;
+    src: url("../fonts/aliensAndCows.ttf");
+}
+
+@font-face {
+    font-family: individigital;
+    src: url("../fonts/IndividigitalDemibold.ttf");
+}
