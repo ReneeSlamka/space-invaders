@@ -1,6 +1,9 @@
 
 function ObjectFactory() {
 
+    //Todo: figure out better way to share this enum
+    var Direction = {left: "left", right: "right", up: "up", down: "down"};
+
     //The basic super class that all other object inherit from
     var GameObject = function (x,y,width,height) {
         this.x = x;
@@ -25,8 +28,8 @@ function ObjectFactory() {
         return this.height;
     };
 
-    GameObject.prototype.setX = function(x,canvasWidth,imgWidth) {
-        if (x >= 0 && x <= canvasWidth - imgWidth) {
+    GameObject.prototype.setX = function(x,canvasWidth) {
+        if (x >= 0 && x <= canvasWidth - this.width) {
             this.x = x;
         } else {
             console.log(this.toString() + " X coordinate is invalid");
@@ -41,6 +44,22 @@ function ObjectFactory() {
         }
     };
 
+    GameObject.prototype.move = function(distance,direction,canvasWidth,canvasHeight) {
+        var tempX = this.x;
+        var tempY = this.y;
+        if (direction === Direction.left) {
+            tempX -= distance;
+        } else if (direction === Direction.right) {
+            tempX += direction;
+        } else if (direction === Direction.up) {
+            tempY -= distance;
+        } else if (direction === Direction.down) {
+            tempY += distance;
+        }
+        this.setX(tempX,canvasWidth);
+        this.setY(tempY,canvasHeight);
+    };
+
     var Bullet = function(x,y,width,height) {
         GameObject.call(this, x, y, width, height);
     };
@@ -50,7 +69,7 @@ function ObjectFactory() {
 
     Bullet.prototype.setY = function(y,canvasHeight) {
         //Ensure bullet can be drawn leaving the screen
-        if (y >= 0 - this.height && y < canvasHeight) {
+        if (y >= 0 - this.height && y <= canvasHeight + this.height) {
             this.y = y;
         } else {
             console.log(this.toString() + " Y coordinate is invalid");
@@ -62,6 +81,7 @@ function ObjectFactory() {
         GameObject.call(this,x,y,width,height);
         this.lives = lives;
         this.img = img;
+        this.alive = true;
     };
 
     Sprite.prototype = new GameObject();
@@ -69,6 +89,19 @@ function ObjectFactory() {
 
     Sprite.prototype.getImg = function() {
         return this.img
+    };
+
+    Sprite.prototype.hit = function() {
+        if (this.lives > 0) {
+            this.lives--;
+        }
+        if (this.lives === 0) {
+            this.alive = false;
+        }
+    };
+
+    Sprite.prototype.isAlive = function() {
+        return this.alive;
     };
 
     var Player = function (lives,x,y,width,height,img) {

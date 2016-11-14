@@ -1,6 +1,4 @@
 function Game() {
-
-    var State = {paused: "paused", playing: "playing", won: "won", lost: "lost"};
     var settings = {
         bgColour: "#000000",
         bulletColour: "#ffffff",
@@ -25,19 +23,17 @@ function Game() {
         playerImg = document.getElementById("player-img");
         alienImg = document.getElementById("alien-img");
 
-        //create game components
-        characterFactory = ObjectFactory();
-        viewController = ViewController();
+        //create game controller
         gameplayController = GameplayController();
         //setup the game
-        gameplayController.setupGame(viewController,characterFactory,playerImg,alienImg,settings);
+        gameplayController.setupGame(playerImg,alienImg,settings);
 
         //add key listener for player controls
         document.addEventListener("keydown", keyPress, false);
 
         //add start function to start button
         var startButton = document.getElementById("start-button");
-        startButton.addEventListener("click",start);
+        startButton.addEventListener("click",play);
         //add pause function to pause button
         var pauseButton = document.getElementById("pause-button");
         pauseButton.addEventListener("click",pause);
@@ -45,32 +41,41 @@ function Game() {
         var restartButton = document.getElementById("restart-button");
         restartButton.addEventListener("click",reset);
 
-        gameState = State.paused;
+        gameState = gameplayController.State.paused;
     }
 
     function keyPress(e) {
-        if (gameState === State.playing) {
+        if (gameState === gameplayController.State.playing) {
             gameplayController.controlPlayer(e);
         }
     }
 
-    function play() {}
-
     function pause() {
-        if (gameState != State.paused) {
+        if (gameState != gameplayController.State.paused) {
             clearInterval(alienMovementTimer);
             clearInterval(bulletMovementTimer);
-            gameState = State.paused;
+            clearInterval(alienShootTimer);
+            gameState = gameplayController.State.paused;
         }
     }
 
-    function start() {
+    function play() {
         //start timer for alien movement
-        if (gameState != State.playing) {
+        if (gameState != gameplayController.State.playing) {
             alienMovementTimer = setInterval(gameplayController.moveAliens,1200);
-            bulletMovementTimer = setInterval(gameplayController.moveBullets,10);
             alienShootTimer = setInterval(gameplayController.groupAlienShoot, 5000);
-            gameState = State.playing;
+            bulletMovementTimer = setInterval(function(){
+                gameplayController.moveBullets();
+                gameState = gameplayController.checkWinLoseStatus();
+                if(gameState === gameplayController.State.won) {
+                    pause();
+                    gameplayController.win();
+                } else if (gameState === gameplayController.State.lost) {
+                    pause();
+                    gameplayController.lose();
+                }
+            },10);
+            gameState = gameplayController.State.playing;
         }
     }
 
@@ -79,14 +84,8 @@ function Game() {
         clearInterval(alienMovementTimer);
         clearInterval(bulletMovementTimer);
         clearInterval(alienShootTimer);
-        gameState = State.paused;
-        //erase entire canvas
-        var canvasWidth = viewController.getCanvasWidth();
-        var canvasHeight = viewController.getCanvasHeight();
-        viewController.eraseImg(settings.bgColour,0,0,canvasWidth,canvasHeight);
-
-        gameplayController.setupGame(viewController,characterFactory,playerImg,alienImg,settings);
-        //init();
+        gameState = gameplayController.State.paused;
+        gameplayController.setupGame(playerImg,alienImg,settings);
     }
 
     return {

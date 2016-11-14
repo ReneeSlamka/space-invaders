@@ -34,12 +34,20 @@ function ViewController() {
         canvasController.fillRect(x,y,width,height);
     }
 
+    function writeText(msg,colour,font,alignment) {
+        canvasController.fillStyle = colour? colour:"blue";
+        canvasController.font = font? font:"30px Comic Sans MS";
+        canvasController.textAlign = alignment? alignment:"center";
+        canvasController.fillText(msg,CANVAS_WIDTH/2,CANVAS_HEIGHT/2);
+    }
+
     return {
         //initCanvasController: initCanvasController,
         getCanvasHeight: getCanvasHeight,
         getCanvasWidth: getCanvasWidth,
         drawImg: drawImage,
         drawBullet: drawBullet,
-        eraseImg: eraseImage
+        eraseImg: eraseImage,
+        writeText: writeText
     };
 }
