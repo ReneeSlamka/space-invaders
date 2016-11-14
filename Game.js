@@ -11,16 +11,14 @@ function Game() {
         alienWidth: 70,
         alienHeight: 50,
         bulletWidth: 6,
-        bulletHeight: 10
+        bulletHeight: 10,
+        alienShootMode: "group"
     };
     var gameState;
     var characterFactory, viewController, gameplayController;
-    var alienMovementTimer, bulletMovementTimer;
+    var alienMovementTimer, bulletMovementTimer, alienShootTimer;
     var playerImg, alienImg;
 
-    //var player;
-    //var listAliens = [];
-    //var listBullets = [];
 
     function init() {
         //get sprite images
@@ -45,7 +43,7 @@ function Game() {
         pauseButton.addEventListener("click",pause);
         //add restart button
         var restartButton = document.getElementById("restart-button");
-        restartButton.addEventListener("click",restart);
+        restartButton.addEventListener("click",reset);
 
         gameState = State.paused;
     }
@@ -71,11 +69,25 @@ function Game() {
         if (gameState != State.playing) {
             alienMovementTimer = setInterval(gameplayController.moveAliens,1200);
             bulletMovementTimer = setInterval(gameplayController.moveBullets,10);
+            alienShootTimer = setInterval(gameplayController.groupAlienShoot, 5000);
             gameState = State.playing;
         }
     }
 
-    function restart() {}
+    function reset() {
+        //stop timers
+        clearInterval(alienMovementTimer);
+        clearInterval(bulletMovementTimer);
+        clearInterval(alienShootTimer);
+        gameState = State.paused;
+        //erase entire canvas
+        var canvasWidth = viewController.getCanvasWidth();
+        var canvasHeight = viewController.getCanvasHeight();
+        viewController.eraseImg(settings.bgColour,0,0,canvasWidth,canvasHeight);
+
+        gameplayController.setupGame(viewController,characterFactory,playerImg,alienImg,settings);
+        //init();
+    }
 
     return {
         init: init

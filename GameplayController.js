@@ -6,11 +6,15 @@ function GameplayController() {
     var vc,objFactory,gameSettings;
 
     var player;
-    var listAliens = [];
-    var listBullets = [];
+    var aliens;
+    var playerBullets;
+    var alienBullets;
 
 
     function setupGame(viewController, objectFactory, playerImg, alienImg, settings) {
+        aliens = [];
+        playerBullets = [];
+        alienBullets = [];
         vc = viewController;
         objFactory = objectFactory;
         gameSettings = settings;
@@ -28,14 +32,14 @@ function GameplayController() {
         var alienH = settings.alienHeight;
         for (var i = 0; i < settings.numAliens; i++) {
             var tempAlien = new objectFactory.alien(1,(200+i*150),50,alienW,alienH,alienImg);
-            listAliens.push(tempAlien);
+            aliens.push(tempAlien);
         }
 
         //draw sprites
         viewController.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
         for (var j = 0; j < settings.numAliens; j++) {
-            var tempX = listAliens[j].getX();
-            var tempY = listAliens[j].getY();
+            var tempX = aliens[j].getX();
+            var tempY = aliens[j].getY();
             viewController.drawImg(alienImg,tempX,tempY,alienW,alienH);
         }
     }
@@ -46,7 +50,7 @@ function GameplayController() {
         if (keyCode == KeyCode.left || keyCode == KeyCode.right) {
             movePlayer(keyCode);
         } else if (keyCode == KeyCode.shoot) {
-            shoot();
+            player.shoot(playerBullets,gameSettings.bulletWidth,gameSettings.bulletHeight);
         } else {
             //do nothing?
         }
@@ -72,14 +76,25 @@ function GameplayController() {
     }
 
     function moveBullets() {
-        shiftGroupObjects(listBullets,2,Direction.up);
-        //check for collision with aliens
-        checkBulletCollision();
+        shiftGroupObjects(playerBullets,2,Direction.up);
+        shiftGroupObjects(alienBullets,2,Direction.down);
+        //check for collision between player bullets and aliens
+        checkBulletCollision(playerBullets, aliens);
+        //check for collision between alien bullets and player
+        //checkBulletCollision(alienBullets,player);
+        drawBullets(playerBullets,Direction.up);
+        drawBullets(alienBullets,Direction.down);
+    }
+
+    function drawBullets(listBullets, direction) {
         for (var i = 0; i < listBullets.length; i++) {
             var bullet = listBullets[i];
-            if (bullet.getY() == 0 - bullet.height) {
+            if ((direction === Direction.up) && (bullet.getY() == 0 - bullet.height)) {
                 //Bullet has gone off screen, need to delete it
-                listBullets.splice(i,1);
+                playerBullets.splice(i,1);
+            } else if ((direction == Direction.down) && (bullet.getY() > vc.getCanvasHeight)) {
+                //Bullet has gone off screen, need to delete it
+                playerBullets.splice(i,1);
             } else {
                 var x = bullet.getX();
                 var y = bullet.getY();
@@ -90,24 +105,31 @@ function GameplayController() {
         }
     }
 
-    function checkBulletCollision() {
-        for (var i = 0; i < listBullets.length; i++) {
-            for (var j = 0; j < listAliens.length; j++) {
-                var bulletX = listBullets[i].getX();
-                var alienX = listAliens[j].getX();
-                var alienW = listAliens[j].getWidth();
+    //Refactor this to only accept array as 2nd parameter?
+    function checkBulletCollision(attackerBullets, target) {
+        for (var i = 0; i < attackerBullets.length; i++) {
+            //if target single object, make it its own array
+            if (target.constructor != Array) {
+                var tempTarget = target;
+                target = [];
+                target.push(tempTarget);
+            }
+            for (var j = 0; j < target.length; j++) {
+                var bulletX = attackerBullets[i].getX();
+                var targetX = target[j].getX();
+                var targetW = target[j].getWidth();
 
-                if (alienX <= bulletX && bulletX <= alienX + alienW) {
-                    var bulletY = listBullets[i].getY();
-                    var alienY = listAliens[j].getY();
-                    var alienH = listAliens[j].getHeight();
+                if (targetX <= bulletX && bulletX <= targetX + targetW) {
+                    var bulletY = attackerBullets[i].getY();
+                    var targetY = target[j].getY();
+                    var targetH = target[j].getHeight();
 
-                    if (alienY <= bulletY && bulletY <= alienY + alienH) {
+                    if (targetY <= bulletY && bulletY <= targetY + targetH) {
                         //remove bullet and alien from lists
-                        listBullets.splice(i,1);
-                        listAliens.splice(j,1);
+                        attackerBullets.splice(i,1);
+                        target.splice(j,1);
                         //erase both objects
-                        vc.eraseImg(gameSettings.bgColour,alienX,alienY,alienW,alienH);
+                        vc.eraseImg(gameSettings.bgColour,targetX,targetY,targetW,targetH);
                         //bullet should already be erased
                         //viewController.eraseImg(Settings.bgColour,bulletXCoord,bulletYCoord,BULLET_W,BULLET_H);
                         break;
@@ -141,21 +163,20 @@ function GameplayController() {
         }
     }
 
+    function groupAlienShoot() {
+        for (var i = 0; i < aliens.length; i++) {
+            aliens[i].shoot(alienBullets,gameSettings.bulletWidth,gameSettings.bulletHeight);
+        }
+    }
 
-    function shoot() {
-        var bulletW = gameSettings.bulletWidth;
-        var bulletH = gameSettings.bulletHeight;
-        var bulletX = player.getX() + player.getWidth()/2 - bulletW/2; //ensure bullet centered
-        var bulletY = player.getY() - bulletH; //ensure no overlap of player image
-        var bullet = new objFactory.bullet(bulletX,bulletY,bulletW,bulletH);
-        listBullets.push(bullet);
-        vc.drawBullet(gameSettings.bulletColour,bulletX,bulletY,bulletW,bulletH);
+    function randomAlienShoot() {
+
     }
 
     function moveAliens() {
-        shiftGroupObjects(listAliens,5,Direction.down);
-        for(var i = 0; i < listAliens.length; i++) {
-            var alien = listAliens[i];
+        shiftGroupObjects(aliens,5,Direction.down);
+        for(var i = 0; i < aliens.length; i++) {
+            var alien = aliens[i];
             vc.drawImg(alien.getImg(),alien.getX(),alien.getY(),alien.getWidth(),alien.getHeight());
         }
     }
@@ -164,6 +185,8 @@ function GameplayController() {
         setupGame: setupGame,
         moveBullets: moveBullets,
         moveAliens: moveAliens,
+        groupAlienShoot: groupAlienShoot,
+        randomAlienShoot: randomAlienShoot,
         controlPlayer: controlPlayer
     };
 }
