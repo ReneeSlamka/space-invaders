@@ -1,7 +1,6 @@
 
 function ViewController() {
-    var characterFactory;
-    var CANVAS_WIDTH = 800;
+    var CANVAS_WIDTH = 600;
     var CANVAS_HEIGHT = 600;
     var canvas;
     var canvasController;
