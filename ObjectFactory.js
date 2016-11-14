@@ -62,13 +62,6 @@ function ObjectFactory() {
         GameObject.call(this,x,y,width,height);
         this.lives = lives;
         this.img = img;
-        this.spriteHit = function() {
-            if (this.lives > 0) {
-                lives --;
-            } else {
-                //call die func for this sprite
-            }
-        }
     };
 
     Sprite.prototype = new GameObject();
@@ -94,13 +87,32 @@ function ObjectFactory() {
         this.score += value;
     };
 
+    Player.prototype.shoot = function(listBullets,bulletWidth,bulletHeight) {
+        var bulletX = this.getX() + this.getWidth()/2 - bulletWidth/2; //ensure bullet centered
+        var bulletY = this.getY() - bulletHeight; //ensure no overlap of player image
+        var bullet = new Bullet(bulletX,bulletY,bulletWidth,bulletHeight);
+        listBullets.push(bullet);
+    };
 
-    var Alien = function (numLives,x,y,width,height,img) {
+
+    var Alien = function(numLives,x,y,width,height,img) {
         Sprite.call(this,numLives,x,y,width,height,img);
+        this.points = 10;
     };
 
     Alien.prototype = new Sprite();
     Alien.prototype.constructor = Alien;
+
+    Alien.prototype.getPoints = function() {
+        return this.points;
+    };
+
+    Alien.prototype.shoot = function(listBullets,bulletWidth, bulletHeight) {
+        var bulletX = this.getX() + this.getWidth()/2 - bulletWidth/2; //ensure bullet centered
+        var bulletY = this.getY() + this.height; //ensure no overlap of alien image
+        var bullet = new Bullet(bulletX,bulletY,bulletWidth,bulletHeight);
+        listBullets.push(bullet);
+    };
 
     return {
         player: Player,
