@@ -12,12 +12,14 @@ function GameplayController() {
 
     var player;
     var aliens;
+    var shields;
     var playerBullets;
     var alienBullets;
 
 
-    function setupGame(playerImg,alienImg,settings) {
+    function setupGame(playerImg,alienImg,shieldImg,settings) {
         aliens = [];
+        shields = [];
         playerBullets = [];
         alienBullets = [];
         viewController = ViewController();
@@ -44,12 +46,25 @@ function GameplayController() {
             aliens.push(tempAlien);
         }
 
+        //create shields
+        var shieldW = gameSettings.shieldWidth;
+        var shieldH = gameSettings.shieldHeight;
+        for (var k = 0; k < gameSettings.numShields; k++) {
+            var tempShield = new objectFactory.shield(1,(200+k*150),400,shieldW,shieldH,shieldImg);
+            shields.push(tempShield);
+        }
+
         //draw sprites
         viewController.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
         for (var j = 0; j < gameSettings.numAliens; j++) {
-            var tempX = aliens[j].getX();
-            var tempY = aliens[j].getY();
-            viewController.drawImg(alienImg,tempX,tempY,alienW,alienH);
+            var alienX = aliens[j].getX();
+            var alienY = aliens[j].getY();
+            viewController.drawImg(alienImg,alienX,alienY,alienW,alienH);
+        }
+        for (var m = 0; m < shields.length; m++) {
+            var shieldX = shields[m].getX();
+            var shieldY = shields[m].getY();
+            viewController.drawImg(shieldImg,shieldX,shieldY,shieldW,shieldH);
         }
     }
 
@@ -97,12 +112,12 @@ function GameplayController() {
             bullet.move(2,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
         });
 
-        //check for collision between player bullets and aliens
-
+        //check for collision between player bullets and aliens/shields
         checkBulletCollision(playerBullets, aliens);
-        //check for collision between alien bullets and player
-        //var gameOver = checkBulletCollision(alienBullets,player);
+        checkBulletCollision(playerBullets, shields);
+        //check for collision between alien bullets and player/shields
         checkBulletCollision(alienBullets,player);
+        checkBulletCollision(alienBullets,shields);
 
         drawBullets(playerBullets,Direction.up);
         drawBullets(alienBullets,Direction.down);

@@ -132,8 +132,8 @@ function ObjectFactory() {
     };
 
 
-    var Alien = function(numLives,x,y,width,height,img) {
-        Sprite.call(this,numLives,x,y,width,height,img);
+    var Alien = function(lives,x,y,width,height,img) {
+        Sprite.call(this,lives,x,y,width,height,img);
         this.points = 10;
     };
 
@@ -151,9 +151,17 @@ function ObjectFactory() {
         listBullets.push(bullet);
     };
 
+    var Shield = function(lives,x,y,width,height,img) {
+        Sprite.call(this,lives,x,y,width,height,img);
+    };
+
+    Shield.prototype = new Sprite();
+    Shield.prototype.constructor = Shield;
+
     return {
         player: Player,
         alien: Alien,
+        shield: Shield,
         bullet: Bullet
     };
 

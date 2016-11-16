@@ -10,10 +10,13 @@ function Game() {
         bulletColour: "#ffffff",
         numLives: 3,
         numAliens: 3,
+        numShields: 3,
         playerWidth: 50,
         playerHeight: 50,
         alienWidth: 70,
         alienHeight: 50,
+        shieldWidth: 70,
+        shieldHeight: 40,
         bulletWidth: 6,
         bulletHeight: 10,
         alienShootMode: "group"
@@ -21,17 +24,19 @@ function Game() {
     var gameState;
     var gameplayController;
     var alienMovementTimer, bulletMovementTimer, alienShootTimer;
-    var playerImg, alienImg;
+    var playerImg, alienImg, shieldImg;
 
 
     function init() {
         //get sprite images
         playerImg = document.getElementById("player-img");
         alienImg = document.getElementById("alien-img");
+        shieldImg = document.getElementById("shield-img");
+
 
         //create game controller and setup the game
         gameplayController = GameplayController();
-        gameplayController.setupGame(playerImg,alienImg,settings);
+        gameplayController.setupGame(playerImg,alienImg,shieldImg,settings);
         gameState = gameplayController.State.paused;
 
         //add key listener for player controls
@@ -83,7 +88,7 @@ function Game() {
 
     function reset() {
         stop();
-        gameplayController.setupGame(playerImg,alienImg,settings);
+        gameplayController.setupGame(playerImg,alienImg,shieldImg,settings);
     }
 
     return {
