@@ -36,23 +36,28 @@ function GameplayController() {
         var playerW = gameSettings.playerWidth;
         var playerH = gameSettings.playerHeight;
 
-        player = new objectFactory.player(3,playerX,playerY,playerW,playerH,playerImg);
+        player = new objectFactory.player(gameSettings.numPlayerLives,playerX,playerY,playerW,playerH,playerImg);
 
         //create aliens
         var alienW = gameSettings.alienWidth;
         var alienH = gameSettings.alienHeight;
         for (var i = 0; i < gameSettings.numAliens; i++) {
-            var tempAlien = new objectFactory.alien(1,(200+i*150),50,alienW,alienH,alienImg);
+            var tempAlien = new objectFactory.alien(gameSettings.numAlienLives,0,0,alienW,alienH,alienImg);
             aliens.push(tempAlien);
         }
+        //set aliens' starting positions (set y at one alien-width from top)
+        calculateObjectStartingPositions(aliens,gameSettings.numAliens,alienW,alienH);
 
         //create shields
         var shieldW = gameSettings.shieldWidth;
         var shieldH = gameSettings.shieldHeight;
+        var shieldNewY = viewController.getCanvasHeight() - (2.2 * gameSettings.playerHeight);
         for (var k = 0; k < gameSettings.numShields; k++) {
-            var tempShield = new objectFactory.shield(1,(200+k*150),400,shieldW,shieldH,shieldImg);
+            var tempShield = new objectFactory.shield(gameSettings.numShieldLives,0,0,shieldW,shieldH,shieldImg);
             shields.push(tempShield);
         }
+        //set shields' starting position (set y at 2.2 player widths from bottom)
+        calculateObjectStartingPositions(shields,gameSettings.numShields,shieldW,shieldNewY);
 
         //draw sprites
         viewController.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
@@ -232,6 +237,19 @@ function GameplayController() {
             var alien = aliens[i];
             alien.move(5,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
             viewController.drawImg(alien.getImg(),alien.getX(),alien.getY(),alien.getWidth(),alien.getHeight());
+        }
+    }
+
+    function calculateObjectStartingPositions(objects,numObjects,objectWidth,yPosition) {
+        var startPosition = objectWidth;
+        var endPosition = viewController.getCanvasWidth() - 2 * objectWidth;
+        var totalDistance = endPosition - startPosition;
+        var offset = totalDistance/(numObjects-1);
+
+        for (var i = 0; i < numObjects; i++) {
+            var newX = startPosition + (i*offset);
+            objects[i].setX(newX,viewController.getCanvasWidth());
+            objects[i].setY(yPosition,viewController.getCanvasHeight());
         }
     }
 
