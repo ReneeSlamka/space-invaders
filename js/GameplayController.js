@@ -46,7 +46,7 @@ function GameplayController() {
             aliens.push(tempAlien);
         }
         //set aliens' starting positions (set y at one alien-width from top)
-        calculateObjectStartingPositions(aliens,gameSettings.numAliens,alienW,alienH);
+        calculateObjectStartingPositions(aliens,gameSettings.numAliens,alienW,2*alienW,3*alienW,alienH);
 
         //create shields
         var shieldW = gameSettings.shieldWidth;
@@ -57,7 +57,7 @@ function GameplayController() {
             shields.push(tempShield);
         }
         //set shields' starting position (set y at 2.2 player widths from bottom)
-        calculateObjectStartingPositions(shields,gameSettings.numShields,shieldW,shieldNewY);
+        calculateObjectStartingPositions(shields,gameSettings.numShields,shieldW,shieldW,2*shieldW,shieldNewY);
 
         //draw sprites
         viewController.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
@@ -240,9 +240,8 @@ function GameplayController() {
         }
     }
 
-    function calculateObjectStartingPositions(objects,numObjects,objectWidth,yPosition) {
-        var startPosition = objectWidth;
-        var endPosition = viewController.getCanvasWidth() - 2 * objectWidth;
+    function calculateObjectStartingPositions(objects,numObjects,objectWidth,startPosition,endOffset,yPosition) {
+        var endPosition = viewController.getCanvasWidth() - endOffset;
         var totalDistance = endPosition - startPosition;
         var offset = totalDistance/(numObjects-1);
 
