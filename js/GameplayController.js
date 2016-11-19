@@ -15,6 +15,8 @@ function GameplayController() {
     var shields;
     var playerBullets;
     var alienBullets;
+    var alienMovementCounter;
+    var nextDirection;
 
 
     function setupGame(playerImg,alienImg,shieldImg,settings) {
@@ -22,6 +24,7 @@ function GameplayController() {
         shields = [];
         playerBullets = [];
         alienBullets = [];
+        alienMovementCounter = 0;
         viewController = ViewController();
         objectFactory = ObjectFactory();
         gameSettings = settings;
@@ -38,15 +41,22 @@ function GameplayController() {
 
         player = new objectFactory.player(gameSettings.numPlayerLives,playerX,playerY,playerW,playerH,playerImg);
 
-        //create aliens
+        //create aliens (2d array - numAlienRows x numAlienColumns
         var alienW = gameSettings.alienWidth;
         var alienH = gameSettings.alienHeight;
-        for (var i = 0; i < gameSettings.numAliens; i++) {
-            var tempAlien = new objectFactory.alien(gameSettings.numAlienLives,0,0,alienW,alienH,alienImg);
-            aliens.push(tempAlien);
+        for (var i = 0; i < gameSettings.numAlienRows; i++) {
+            var tempAlienRow = [];
+            for (var j = 0; j < gameSettings.numAlienColumns; j++) {
+                var tempAlien = new objectFactory.alien(gameSettings.numAlienLives,0,0,alienW,alienH,alienImg);
+                tempAlienRow.push(tempAlien);
+            }
+            aliens.push(tempAlienRow);
         }
         //set aliens' starting positions (set y at one alien-width from top)
-        calculateObjectStartingPositions(aliens,gameSettings.numAliens,alienW,2*alienW,3*alienW,alienH);
+        for (k = 0; k < aliens.length; k++) {
+            var tempY = ((1.5 * k) + 1) * alienH;
+            calculateObjectStartingPositions(aliens[k],gameSettings.numAlienColumns,alienW,2*alienW,3*alienW,tempY);
+        }
 
         //create shields
         var shieldW = gameSettings.shieldWidth;
@@ -61,14 +71,16 @@ function GameplayController() {
 
         //draw sprites
         viewController.drawImg(playerImg,player.getX(),player.getY(),playerW,playerH);
-        for (var j = 0; j < gameSettings.numAliens; j++) {
-            var alienX = aliens[j].getX();
-            var alienY = aliens[j].getY();
-            viewController.drawImg(alienImg,alienX,alienY,alienW,alienH);
+        for (var m = 0; m < aliens.length; m++) {
+            for (var n = 0; n < aliens[m].length; n++) {
+                var alienX = aliens[m][n].getX();
+                var alienY = aliens[m][n].getY();
+                viewController.drawImg(alienImg,alienX,alienY,alienW,alienH);
+            }
         }
-        for (var m = 0; m < shields.length; m++) {
-            var shieldX = shields[m].getX();
-            var shieldY = shields[m].getY();
+        for (var s = 0; s < shields.length; s++) {
+            var shieldX = shields[s].getX();
+            var shieldY = shields[s].getY();
             viewController.drawImg(shieldImg,shieldX,shieldY,shieldW,shieldH);
         }
     }
@@ -104,6 +116,38 @@ function GameplayController() {
         } //else hit a boundary so no movement - don't redraw
     }
 
+    function moveAliens() {
+
+        var nextDirection = calculateNextAlienMovement();
+
+        for(var i = 0; i < aliens.length; i++) {
+            // Erase row of aliens
+            eraseGroupObjects(aliens[i]);
+            // Move and redraw all aliens in that row
+            for (var j = 0; j < aliens[i].length; j++) {
+                //alien.move(5,nextDirection,viewController.getCanvasWidth(),viewController.getCanvasHeight());
+                aliens[i][j].move(5,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
+                var newX = aliens[i][j].getX();
+                var newY = aliens[i][j].getY();
+                var width = aliens[i][j].getWidth();
+                var height = aliens[i][j].getHeight();
+                viewController.drawImg(aliens[i][j].getImg(),newX,newY,width,height);
+            }
+        }
+    }
+
+    function calculateObjectStartingPositions(objects,numObjects,objectWidth,startPosition,endOffset,yPosition) {
+        var endPosition = viewController.getCanvasWidth() - endOffset;
+        var totalDistance = endPosition - startPosition;
+        var offset = totalDistance/(numObjects-1);
+
+        for (var i = 0; i < numObjects; i++) {
+            var newX = startPosition + (i*offset);
+            objects[i].setX(newX,viewController.getCanvasWidth());
+            objects[i].setY(yPosition,viewController.getCanvasHeight());
+        }
+    }
+
     function moveBullets() {
         //erase all bullets
         eraseGroupObjects(playerBullets);
@@ -118,8 +162,11 @@ function GameplayController() {
         });
 
         //check for collision between player bullets and aliens/shields
-        checkBulletCollision(playerBullets, aliens);
+        for (var i = 0; i < aliens.length; i++) {
+            checkBulletCollision(playerBullets, aliens[i]);
+        }
         checkBulletCollision(playerBullets, shields);
+
         //check for collision between alien bullets and player/shields
         checkBulletCollision(alienBullets,player);
         checkBulletCollision(alienBullets,shields);
@@ -231,25 +278,24 @@ function GameplayController() {
 
     }
 
-    function moveAliens() {
-        eraseGroupObjects(aliens);
-        for(var i = 0; i < aliens.length; i++) {
-            var alien = aliens[i];
-            alien.move(5,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
-            viewController.drawImg(alien.getImg(),alien.getX(),alien.getY(),alien.getWidth(),alien.getHeight());
-        }
-    }
+    //TODO: redo this with a more flexible algorithm later
+    function calculateNextAlienMovement() {
+        var nextDirection;
 
-    function calculateObjectStartingPositions(objects,numObjects,objectWidth,startPosition,endOffset,yPosition) {
-        var endPosition = viewController.getCanvasWidth() - endOffset;
-        var totalDistance = endPosition - startPosition;
-        var offset = totalDistance/(numObjects-1);
-
-        for (var i = 0; i < numObjects; i++) {
-            var newX = startPosition + (i*offset);
-            objects[i].setX(newX,viewController.getCanvasWidth());
-            objects[i].setY(yPosition,viewController.getCanvasHeight());
+        if (alienMovementCounter < 2) {
+            nextDirection = Direction.right;
+        } else if (alienMovementCounter == 2) {
+            nextDirection = Direction.down;
+        } else if (alienMovementCounter >=3 && alienMovementCounter <= 4) {
+            nextDirection = Direction.left;
+        } else {
+            nextDirection = Direction.down;
         }
+        alienMovementCounter++;
+        if (alienMovementCounter == 6) {
+            alienMovementCounter = 0;
+        }
+        return nextDirection;
     }
 
     return {
