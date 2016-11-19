@@ -9,21 +9,14 @@ function GameplayController() {
     var KeyCode = {left: 37, right: 39, shoot: 32};
     var Direction = {left: "left", right: "right", up: "up", down: "down"};
     var viewController,objectFactory,gameSettings;
-
-    var player;
-    var aliens;
-    var shields;
-    var playerBullets;
-    var alienBullets;
+    var player,aliens,shields;
+    var playerBullets,alienBullets;
     var alienMovementCounter;
     var nextDirection;
 
 
     function setupGame(playerImg,alienImg,shieldImg,settings) {
-        aliens = [];
-        shields = [];
-        playerBullets = [];
-        alienBullets = [];
+        aliens = shields = playerBullets = alienBullets = [];
         alienMovementCounter = 0;
         viewController = ViewController();
         objectFactory = ObjectFactory();
