@@ -52,6 +52,14 @@ function Game() {
         stopButton.addEventListener("click",stop);
         var resetButton = document.getElementById("reset-button");
         resetButton.addEventListener("click",reset);
+
+        //init "change image" buttons
+        var alienImgButton = document.getElementById("alien-img-button");
+        alienImgButton.addEventListener("click", changeImg("alien-img-input", "alien-img"));
+        var playerImgButton = document.getElementById("player-img-button");
+        playerImgButton.addEventListener("click", changeImg("player-img-input", "player-img"));
+        var shieldImgButton = document.getElementById("shield-img-button");
+        shieldImgButton.addEventListener("click", changeImg("shield-img-input", "shield-img"));
     }
 
     function keyPress(e) {
@@ -92,6 +100,19 @@ function Game() {
     function reset() {
         stop();
         gameplayController.setupGame(playerImg,alienImg,shieldImg,settings);
+    }
+
+    function changeImg(inputId, imgId) {
+        return function() {
+            var newImgUrl = document.getElementById(inputId).value;
+            if (newImgUrl && newImgUrl.length > 0) {
+                document.getElementById(imgId).src = newImgUrl;
+                playerImg = document.getElementById("player-img");
+                alienImg = document.getElementById("alien-img");
+                shieldImg = document.getElementById("shield-img");
+                setTimeout(reset, 100);
+            }
+        };
     }
 
     return {

@@ -3,10 +3,15 @@
  * functions for the game canvas.
  */
 function ViewController() {
-    var CANVAS_WIDTH = 600;
+    var CANVAS_WIDTH = 700;
     var CANVAS_HEIGHT = 600;
     var canvas;
     var canvasController;
+    var PresetImages = {
+        player: "img/spaceship.jpg",
+        alien: "img/alien.jpg",
+        shield: "img/shield.jpg"
+    };
 
     function getCanvasHeight() {
         return CANVAS_HEIGHT;
