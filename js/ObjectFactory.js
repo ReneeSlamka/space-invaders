@@ -54,7 +54,7 @@ function ObjectFactory() {
         if (direction === Direction.left) {
             tempX -= distance;
         } else if (direction === Direction.right) {
-            tempX += direction;
+            tempX += distance;
         } else if (direction === Direction.up) {
             tempY -= distance;
         } else if (direction === Direction.down) {
@@ -135,10 +135,20 @@ function ObjectFactory() {
     var Alien = function(lives,x,y,width,height,img) {
         Sprite.call(this,lives,x,y,width,height,img);
         this.points = 10;
+        this.isLeftmost = false;
+        this.isRightmost = false;
     };
 
     Alien.prototype = new Sprite();
     Alien.prototype.constructor = Alien;
+
+    Alien.prototype.setIsLeftmost = function() {
+        this.isLeftmost = true;
+    };
+
+    Alien.prototype.setIsRightmost = function() {
+        this.isRightmost = true;
+    };
 
     Alien.prototype.getPoints = function() {
         return this.points;

@@ -60,6 +60,8 @@ function Game() {
         playerImgButton.addEventListener("click", changeImg("player-img-input", "player-img"));
         var shieldImgButton = document.getElementById("shield-img-button");
         shieldImgButton.addEventListener("click", changeImg("shield-img-input", "shield-img"));
+
+        // todo: add a Restore Defaults button for images
     }
 
     function keyPress(e) {
@@ -80,9 +82,9 @@ function Game() {
     function play() {
         //start timers for bullet movement, alien movement and alien shooting
         if (gameState != gameplayController.State.playing) {
-            alienMovementTimer = setInterval(gameplayController.moveAliens,1200);
+            alienMovementTimer = setInterval(gameplayController.moveAliens,800);
             alienShootTimer = setInterval(gameplayController.groupAlienShoot, 5000);
-            bulletMovementTimer = setInterval(function(){
+            /*bulletMovementTimer = setInterval(function(){
                 gameplayController.moveBullets();
                 gameState = gameplayController.checkWinLoseStatus();
                 if(gameState === gameplayController.State.won) {
@@ -92,7 +94,7 @@ function Game() {
                     stop();
                     gameplayController.lose();
                 }
-            },10);
+            },10);*/
             gameState = gameplayController.State.playing;
         }
     }
