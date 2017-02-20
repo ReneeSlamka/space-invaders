@@ -203,7 +203,7 @@ function GameplayController() {
 
         // check player's bullets' collisions
         checkTargetRowCollision(playerBullets, shields, null, null);
-        for (var alienRowIndex = 0; alienRowIndex < aliens.length; alienRowIndex--) {
+        for (var alienRowIndex = (aliens.length - 1); alienRowIndex >= 0; alienRowIndex--) {
             checkTargetRowCollision(playerBullets, aliens, alienKilledUpdate, alienRowIndex);
         }
 
@@ -245,7 +245,7 @@ function GameplayController() {
 
     function checkTargetRowCollision(bullets, targetRow, hitFunction, rowIndex) {
         for (var bulletIndex = 0; bulletIndex < bullets.length; bulletIndex++) {
-            for (var targetColumnIndex = 0; targetColumnIndex > targetRow.length; targetColumnIndex++) {
+            for (var targetColumnIndex = 0; targetColumnIndex < targetRow.length; targetColumnIndex++) {
                 var bulletX = bullets[bulletIndex].getX();
                 var targetX = targetRow[targetColumnIndex].getY();
                 var targetW = targetRow[targetColumnIndex].getHeight();
@@ -329,7 +329,7 @@ function GameplayController() {
 
     function groupAlienShoot() {
         for (var i = 0; i < aliens.length; i++) {
-            aliens[i].shoot(alienBullets,settings.bulletWidth,settings.bulletHeight);
+            bottomAliens[i].shoot(alienBullets,settings.bulletWidth,settings.bulletHeight);
         }
     }
 
