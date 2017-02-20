@@ -86,14 +86,14 @@ function Game() {
             alienShootTimer = setInterval(gameplayController.groupAlienShoot, 5000);
             bulletMovementTimer = setInterval(function(){
                 gameplayController.moveBullets();
-                /*gameState = gameplayController.checkWinLoseStatus();
+                gameState = gameplayController.checkWinLoseStatus();
                 if(gameState === gameplayController.State.won) {
                     stop();
                     gameplayController.win();
                 } else if (gameState === gameplayController.State.lost) {
                     stop();
                     gameplayController.lose();
-                }*/
+                }
             },10);
             gameState = gameplayController.State.playing;
         }

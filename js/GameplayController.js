@@ -204,13 +204,14 @@ function GameplayController() {
         // check player's bullets' collisions
         checkTargetRowCollision(playerBullets, shields, null, null);
         for (var alienRowIndex = (aliens.length - 1); alienRowIndex >= 0; alienRowIndex--) {
-            checkTargetRowCollision(playerBullets, aliens, alienKilledUpdate, alienRowIndex);
+            checkTargetRowCollision(playerBullets, aliens[alienRowIndex], alienKilledUpdate, alienRowIndex);
         }
 
         // check aliens' bullets' collisions
         checkTargetRowCollision(alienBullets, shields, null, null);
         checkTargetRowCollision(alienBullets, [player], null, null);
         drawBullets(alienBullets,Direction.down);
+        drawBullets(playerBullets, Direction.up);
     }
 
     function eraseGroupObjects(objects) {
@@ -234,9 +235,9 @@ function GameplayController() {
                 //Bullet has gone off bottom of canvas, delete it
                 playerBullets.splice(i,1);
             } else {
-                var x = bullet.getX();
+                var x = bullet.getX() + 2; // otherwise leaves white line after erasing
                 var y = bullet.getY();
-                var width = bullet.getWidth();
+                var width = bullet.getWidth() - 4;// see above comment
                 var height = bullet.getHeight();
                 viewController.drawBullet(settings.bulletColour,x,y,width,height);
             }
@@ -247,7 +248,7 @@ function GameplayController() {
         for (var bulletIndex = 0; bulletIndex < bullets.length; bulletIndex++) {
             for (var targetColumnIndex = 0; targetColumnIndex < targetRow.length; targetColumnIndex++) {
                 var bulletX = bullets[bulletIndex].getX();
-                var targetX = targetRow[targetColumnIndex].getY();
+                var targetX = targetRow[targetColumnIndex].getX();
                 var targetW = targetRow[targetColumnIndex].getHeight();
                 var bulletY = bullets[bulletIndex].getY();
                 var targetY = targetRow[targetColumnIndex].getY();
@@ -328,7 +329,7 @@ function GameplayController() {
     }
 
     function groupAlienShoot() {
-        for (var i = 0; i < aliens.length; i++) {
+        for (var i = 0; i < bottomAliens.length; i++) {
             bottomAliens[i].shoot(alienBullets,settings.bulletWidth,settings.bulletHeight);
         }
     }
