@@ -193,13 +193,23 @@ function GameplayController() {
         eraseGroupObjects(playerBullets);
         eraseGroupObjects(alienBullets);
 
-        // update the positions of all bullets
-        playerBullets.forEach(function(bullet) {
-            bullet.move(2,Direction.up,viewController.getCanvasWidth(),viewController.getCanvasHeight());
-        });
-        alienBullets.forEach(function(bullet) {
-            bullet.move(2,Direction.down,viewController.getCanvasWidth(),viewController.getCanvasHeight());
-        });
+        // update the positions of all bullets - remove out of bounds bullets
+        for (var i = 0; i < playerBullets.length; i++) {
+            var playerFireOutOfBounds = playerBullets[i].move(2,Direction.up,viewController.getCanvasWidth(),
+                    viewController.getCanvasHeight());
+            if (playerFireOutOfBounds) {
+                playerBullets.splice(i,1);
+                i--;
+            }
+        }
+        for (var j = 0; j < alienBullets.length; j++) {
+            var alienFireOutOfBounds = alienBullets[j].move(2,Direction.down,viewController.getCanvasWidth(),
+                viewController.getCanvasHeight());
+            if (alienFireOutOfBounds) {
+                alienBullets.splice(j,1);
+                j--;
+            }
+        }
 
         // check player's bullets' collisions
         checkTargetRowCollision(playerBullets, shields, null, null);
@@ -210,8 +220,8 @@ function GameplayController() {
         // check aliens' bullets' collisions
         checkTargetRowCollision(alienBullets, shields, null, null);
         checkTargetRowCollision(alienBullets, [player], null, null);
-        drawBullets(alienBullets,Direction.down);
-        drawBullets(playerBullets, Direction.up);
+        drawBullets(alienBullets);
+        drawBullets(playerBullets);
     }
 
     function eraseGroupObjects(objects) {
@@ -224,23 +234,14 @@ function GameplayController() {
         }
     }
 
-    function drawBullets(listBullets, direction) {
+    function drawBullets(listBullets) {
         for (var i = 0; i < listBullets.length; i++) {
             var bullet = listBullets[i];
-            if ((direction === Direction.up) && (bullet.getY() == 0 - bullet.height)) {
-                //Bullet has gone off top of canvas, delete it
-                playerBullets.splice(i,1);
-            } else if ((direction == Direction.down) &&
-                (bullet.getY() > viewController.getCanvasHeight + bullet.getHeight())) {
-                //Bullet has gone off bottom of canvas, delete it
-                playerBullets.splice(i,1);
-            } else {
-                var x = bullet.getX() + 2; // otherwise leaves white line after erasing
-                var y = bullet.getY();
-                var width = bullet.getWidth() - 4;// see above comment
-                var height = bullet.getHeight();
-                viewController.drawBullet(settings.bulletColour,x,y,width,height);
-            }
+            var x = bullet.getX() + 2; // otherwise leaves white line after erasing
+            var y = bullet.getY();
+            var width = bullet.getWidth() - 4;// see above comment
+            var height = bullet.getHeight();
+            viewController.drawBullet(settings.bulletColour,x,y,width,height);
         }
     }
 
@@ -253,10 +254,23 @@ function GameplayController() {
                 var bulletY = bullets[bulletIndex].getY();
                 var targetY = targetRow[targetColumnIndex].getY();
                 var targetH = targetRow[targetColumnIndex].getHeight();
+                var bulletDirection = bullets[bulletIndex].getDirection();
+                var targetHit = false;
 
-                if ((targetX <= bulletX && bulletX <= targetX + targetW) &&
-                    (targetY <= bulletY && bulletY <= targetY + targetH)) {
-                    //remove bullet from list and erase it
+                if (targetX <= bulletX && bulletX <= targetX + targetW) {
+                    // Separate Y conditions so alien fire doesn't cut into targets when bullets erased
+                    if (bulletDirection === Direction.down && targetY <= (bulletY + bullets[bulletIndex].getHeight()) &&
+                        (bulletY + bullets[bulletIndex].getHeight()) <= targetY + targetH) {
+                        targetHit = true;
+                    } else if (bulletDirection === Direction.up && targetY <= bulletY &&
+                        bulletY <= targetY + targetH) {
+                        targetHit = true;
+                    }
+
+                    if(!targetHit) {
+                        return;
+                    }
+                    // Remove bullet from list and erase it
                     var bulletW = bullets[bulletIndex].getWidth();
                     var bulletH = bullets[bulletIndex].getHeight();
                     viewController.eraseImg(settings.bgColour, bulletX, bulletY, bulletW, bulletH);

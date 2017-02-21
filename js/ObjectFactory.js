@@ -33,19 +33,23 @@ function ObjectFactory() {
     };
 
     GameObject.prototype.setX = function(x,canvasWidth) {
+        var outOfXBound = false;
         if (x >= 0 && x <= canvasWidth - this.width) {
             this.x = x;
         } else {
-            console.log(this.toString() + " X coordinate is invalid");
+            outOfXBound = true;
         }
+        return outOfXBound;
     };
 
     GameObject.prototype.setY = function(y,canvasHeight) {
+        var outOfYBound = false;
         if (y > 0 && y < canvasHeight) {
             this.y = y;
         } else {
-            console.log(this.toString() + " Y coordinate is invalid");
+            outOfYBound = true;
         }
+        return outOfYBound;
     };
 
     GameObject.prototype.move = function(distance,direction,canvasWidth,canvasHeight) {
@@ -60,12 +64,15 @@ function ObjectFactory() {
         } else if (direction === Direction.down) {
             tempY += distance;
         }
-        this.setX(tempX,canvasWidth);
-        this.setY(tempY,canvasHeight);
+        var outOfXBound = this.setX(tempX,canvasWidth);
+        var outOfYBound = this.setY(tempY,canvasHeight);
+
+        return (outOfXBound || outOfYBound);
     };
 
-    var Bullet = function(x,y,width,height) {
+    var Bullet = function(x,y,width,height, direction) {
         GameObject.call(this, x, y, width, height);
+        this.direction = direction;
     };
 
     Bullet.prototype = new GameObject();
@@ -73,11 +80,17 @@ function ObjectFactory() {
 
     Bullet.prototype.setY = function(y,canvasHeight) {
         //Ensure bullet can be drawn leaving the screen
+        var outOfYBound = false;
         if (y >= 0 - this.height && y <= canvasHeight + this.height) {
             this.y = y;
         } else {
-            console.log(this.toString() + " Y coordinate is invalid");
+            outOfYBound = true;
         }
+        return outOfYBound;
+    };
+
+    Bullet.prototype.getDirection = function () {
+        return this.direction;
     };
 
     //The basic game character class, parent to Alien and Player
@@ -127,7 +140,7 @@ function ObjectFactory() {
     Player.prototype.shoot = function(listBullets,bulletWidth,bulletHeight) {
         var bulletX = this.getX() + this.getWidth()/2 - bulletWidth/2; //ensure bullet centered
         var bulletY = this.getY() - bulletHeight; //ensure no overlap of player image
-        var bullet = new Bullet(bulletX,bulletY,bulletWidth,bulletHeight);
+        var bullet = new Bullet(bulletX,bulletY,bulletWidth,bulletHeight, Direction.up);
         listBullets.push(bullet);
     };
 
@@ -165,7 +178,7 @@ function ObjectFactory() {
     Alien.prototype.shoot = function(listBullets,bulletWidth, bulletHeight) {
         var bulletX = this.getX() + this.getWidth()/2 - bulletWidth/2; //ensure bullet centered
         var bulletY = this.getY() + this.height; //ensure no overlap of alien image
-        var bullet = new Bullet(bulletX,bulletY,bulletWidth,bulletHeight);
+        var bullet = new Bullet(bulletX,bulletY,bulletWidth,bulletHeight, Direction.down);
         listBullets.push(bullet);
     };
 
