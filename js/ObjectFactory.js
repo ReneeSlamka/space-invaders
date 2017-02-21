@@ -150,6 +150,14 @@ function ObjectFactory() {
         this.isRightmost = true;
     };
 
+    Alien.prototype.getIsLeftmost = function () {
+        return this.isLeftmost;
+    };
+
+    Alien.prototype.getIsRightmost = function () {
+        return this.isRightmost;
+    };
+
     Alien.prototype.getPoints = function() {
         return this.points;
     };

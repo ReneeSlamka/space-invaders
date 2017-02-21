@@ -249,7 +249,7 @@ function GameplayController() {
             for (var targetColumnIndex = 0; targetColumnIndex < targetRow.length; targetColumnIndex++) {
                 var bulletX = bullets[bulletIndex].getX();
                 var targetX = targetRow[targetColumnIndex].getX();
-                var targetW = targetRow[targetColumnIndex].getHeight();
+                var targetW = targetRow[targetColumnIndex].getWidth();
                 var bulletY = bullets[bulletIndex].getY();
                 var targetY = targetRow[targetColumnIndex].getY();
                 var targetH = targetRow[targetColumnIndex].getHeight();
@@ -281,7 +281,7 @@ function GameplayController() {
     // Todo: this function relies on assumption that traverse the alien grid in same
     // order it was made AND that alien hasn't been removed yet. Seems very frail and error prone.
     function alienKilledUpdate(alien, rowIndex, columnIndex) {
-        if (alien.isLeftmost) {
+        if (alien.getIsLeftmost()) {
             if (aliens[rowIndex].length > 1) {
                 leftmostAliens[rowIndex] = aliens[rowIndex][columnIndex + 1];
             } else {
@@ -289,7 +289,7 @@ function GameplayController() {
                 delete leftmostAliens[rowIndex];
             }
         }
-        if (alien.isRightmost) {
+        if (alien.getIsRightmost()) {
             if (aliens[rowIndex].length > 1) {
                 rightmostAliens[rowIndex] = aliens[rowIndex][columnIndex - 1];
             } else {
