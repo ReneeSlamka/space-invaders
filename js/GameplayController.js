@@ -44,6 +44,7 @@ function GameplayController() {
         //clear canvas
         viewController.eraseImg(settings.bgColour,0,0,viewController.getCanvasWidth(),
             viewController.getCanvasHeight());
+        document.getElementById("score").innerHTML = "0";
 
         //create player
         var playerX = viewController.getCanvasWidth()/2 - playerImg.width/2;
@@ -319,6 +320,8 @@ function GameplayController() {
         }
         numAliens--;
         player.changeScore(alien.getPoints());
+        // Update displayed user score
+        document.getElementById("score").innerHTML = player.getScore();
     }
 
     function checkWinLoseStatus() {
