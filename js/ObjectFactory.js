@@ -144,6 +144,9 @@ function ObjectFactory() {
         listBullets.push(bullet);
     };
 
+    Player.prototype.getLives = function () {
+        return this.lives;
+    };
 
     var Alien = function(lives,x,y,width,height,img) {
         Sprite.call(this,lives,x,y,width,height,img);

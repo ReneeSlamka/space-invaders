@@ -45,6 +45,7 @@ function GameplayController() {
         viewController.eraseImg(settings.bgColour,0,0,viewController.getCanvasWidth(),
             viewController.getCanvasHeight());
         document.getElementById("score").innerHTML = "0";
+        document.getElementById("num-lives").innerHTML = settings.numPlayerLives.toString();
 
         //create player
         var playerX = viewController.getCanvasWidth()/2 - playerImg.width/2;
@@ -218,9 +219,10 @@ function GameplayController() {
             checkTargetRowCollision(playerBullets, aliens[alienRowIndex], alienKilledUpdate, alienRowIndex);
         }
 
-        // check aliens' bullets' collisions
+        // check aliens' bullets' collisions and update game feedback
         checkTargetRowCollision(alienBullets, shields, null, null);
         checkTargetRowCollision(alienBullets, [player], null, null);
+        document.getElementById('num-lives').innerHTML = player.getLives();
         drawBullets(alienBullets);
         drawBullets(playerBullets);
     }
