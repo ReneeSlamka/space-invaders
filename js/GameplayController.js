@@ -296,7 +296,6 @@ function GameplayController() {
                         if (hitFunction) {
                             hitFunction.call(null, targetRow[targetColumnIndex], rowIndex, targetColumnIndex);
                         }
-                        //targetRow.splice(targetColumnIndex, 1);
                         delete aliens[rowIndex][targetColumnIndex];
                         // delete row if all aliens have been killed
                         if (isRowEmpty(aliens[rowIndex])) {
@@ -334,8 +333,6 @@ function GameplayController() {
                 }
             } else {
                 // So if no aliens left in that row can preserve row/col number alignment
-                //delete leftmostAliens[rowIndex]; //todo: should be splicing instead
-                //leftmostAliens.splice(columnIndex,1);
                 leftmostAliens.splice(rowIndex,1); //not column, is row
             }
         }
@@ -350,14 +347,10 @@ function GameplayController() {
                     }
                 }
             } else {
-                //delete rightmostAliens[rowIndex];
-                //rightmostAliens.splice(columnIndex,1);
                 rightmostAliens.splice(rowIndex,1);
             }
         }
-        //if (bottomAliens.indexOf(alien) !== -1) {
         if (alien.getIsBottom()) {
-            //if (rowIndex > 1) {
             if (rowIndex > 0) {
                 // search for next bottommost alien
                 for (var k = rowIndex - 1; k >= 0; k--) {
