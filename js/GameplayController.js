@@ -11,7 +11,6 @@ function GameplayController() {
     var viewController,objectFactory,settings;
     var player,aliens,shields, leftmostAliens, rightmostAliens, bottomAliens;
     var playerBullets,alienBullets;
-    var alienMovementCounter;
     var previousAlienDirection;
     var alienDirection;
     var leftBound;
@@ -32,7 +31,6 @@ function GameplayController() {
         rightmostAliens = [];
         bottomAliens = [];
 
-        alienMovementCounter = 0;
         viewController = ViewController();
         objectFactory = ObjectFactory();
         settings = gameSettings;
@@ -76,6 +74,7 @@ function GameplayController() {
                     rightmostAliens.push(tempAlien);
                 }
                 if (i === settings.numAlienRows - 1) {
+                    tempAlien.setIsBottom();
                     bottomAliens.push(tempAlien);
                 }
                 tempAlienRow.push(tempAlien);
@@ -150,14 +149,18 @@ function GameplayController() {
         // Change direction if they will
         if (alienDirection === Direction.left) {
             for (var i = 0; i < leftmostAliens.length; i++) {
-                if (leftmostAliens[i].getX() - alienStepVal < leftBound) {
-                    alienDirection = Direction.right
+                if (leftmostAliens[i] != undefined) {
+                    if (leftmostAliens[i].getX() - alienStepVal < leftBound) {
+                        alienDirection = Direction.right
+                    }
                 }
             }
         } else if (alienDirection === Direction.right) {
             for (var j = 0; j < rightmostAliens.length; j++) {
-                if (rightmostAliens[j].getX() + rightmostAliens[j].getWidth() + alienStepVal > rightBound) {
-                    alienDirection = Direction.left
+                if (rightmostAliens[j] != undefined) {
+                    if (rightmostAliens[j].getX() + rightmostAliens[j].getWidth() + alienStepVal > rightBound) {
+                        alienDirection = Direction.left
+                    }
                 }
             }
         }
@@ -167,13 +170,15 @@ function GameplayController() {
             eraseGroupObjects(aliens[rowIndex]);
             // Move and redraw all aliens in that row
             for (var columnIndex = 0; columnIndex < aliens[rowIndex].length; columnIndex++) {
-                aliens[rowIndex][columnIndex].move(alienStepVal,alienDirection,viewController.getCanvasWidth(),
-                    viewController.getCanvasHeight());
-                var newX = aliens[rowIndex][columnIndex].getX();
-                var newY = aliens[rowIndex][columnIndex].getY();
-                var width = aliens[rowIndex][columnIndex].getWidth();
-                var height = aliens[rowIndex][columnIndex].getHeight();
-                viewController.drawImg(aliens[rowIndex][columnIndex].getImg(),newX,newY,width,height);
+                if (aliens[rowIndex][columnIndex] != undefined) {
+                    aliens[rowIndex][columnIndex].move(alienStepVal,alienDirection,viewController.getCanvasWidth(),
+                        viewController.getCanvasHeight());
+                    var newX = aliens[rowIndex][columnIndex].getX();
+                    var newY = aliens[rowIndex][columnIndex].getY();
+                    var width = aliens[rowIndex][columnIndex].getWidth();
+                    var height = aliens[rowIndex][columnIndex].getHeight();
+                    viewController.drawImg(aliens[rowIndex][columnIndex].getImg(),newX,newY,width,height);
+                }
             }
         }
     }
@@ -229,11 +234,13 @@ function GameplayController() {
 
     function eraseGroupObjects(objects) {
         for (var i = 0; i < objects.length; i++) {
-            var x = objects[i].getX();
-            var y = objects[i].getY();
-            var width = objects[i].getWidth();
-            var height = objects[i].getHeight();
-            viewController.eraseImg(settings.bgColour,x,y,width,height);
+            if (objects[i] != undefined) {
+                var x = objects[i].getX();
+                var y = objects[i].getY();
+                var width = objects[i].getWidth();
+                var height = objects[i].getHeight();
+                viewController.eraseImg(settings.bgColour,x,y,width,height);
+            }
         }
     }
 
@@ -251,6 +258,9 @@ function GameplayController() {
     function checkTargetRowCollision(bullets, targetRow, hitFunction, rowIndex) {
         for (var bulletIndex = 0; bulletIndex < bullets.length; bulletIndex++) {
             for (var targetColumnIndex = 0; targetColumnIndex < targetRow.length; targetColumnIndex++) {
+                if (targetRow[targetColumnIndex] == undefined) {
+                    continue;
+                }
                 var bulletX = bullets[bulletIndex].getX();
                 var targetX = targetRow[targetColumnIndex].getX();
                 var targetW = targetRow[targetColumnIndex].getWidth();
@@ -262,17 +272,17 @@ function GameplayController() {
 
                 if (targetX <= bulletX && bulletX <= targetX + targetW) {
                     // Separate Y conditions so alien fire doesn't cut into targets when bullets erased
-                    if (bulletDirection === Direction.down && targetY <= (bulletY + bullets[bulletIndex].getHeight()) &&
-                        (bulletY + bullets[bulletIndex].getHeight()) <= targetY + targetH) {
+                    if (bulletDirection === Direction.down && targetY <= (bulletY + bullets[bulletIndex].getHeight())
+                        && (bulletY + bullets[bulletIndex].getHeight()) <= targetY + targetH) {
                         targetHit = true;
                     } else if (bulletDirection === Direction.up && targetY <= bulletY &&
                         bulletY <= targetY + targetH) {
                         targetHit = true;
                     }
-
                     if(!targetHit) {
                         return;
                     }
+
                     // Remove bullet from list and erase it
                     var bulletW = bullets[bulletIndex].getWidth();
                     var bulletH = bullets[bulletIndex].getHeight();
@@ -286,8 +296,12 @@ function GameplayController() {
                         if (hitFunction) {
                             hitFunction.call(null, targetRow[targetColumnIndex], rowIndex, targetColumnIndex);
                         }
-                        // todo: what happens when you splice an array of size one?
-                        targetRow.splice(targetColumnIndex, 1);
+                        //targetRow.splice(targetColumnIndex, 1);
+                        delete aliens[rowIndex][targetColumnIndex];
+                        // delete row if all aliens have been killed
+                        if (isRowEmpty(aliens[rowIndex])) {
+                            aliens.splice(rowIndex,1);
+                        }
                         break;
                     }
                 }
@@ -295,28 +309,66 @@ function GameplayController() {
         }
     }
 
+    function isRowEmpty(rowSprites) {
+        for (var i = 0; i < rowSprites.length; i++) {
+            if (rowSprites[i] != undefined) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Todo: this function relies on assumption that traverse the alien grid in same
     // order it was made AND that alien hasn't been removed yet. Seems very frail and error prone.
     function alienKilledUpdate(alien, rowIndex, columnIndex) {
+        // Note: if only one element will remain after the splicing, it will be leftmost AND rightmost
         if (alien.getIsLeftmost()) {
             if (aliens[rowIndex].length > 1) {
-                leftmostAliens[rowIndex] = aliens[rowIndex][columnIndex + 1];
+                // search for next leftmost alien
+                for (var i = columnIndex + 1; i < aliens[rowIndex].length; i++) {
+                    if (aliens[rowIndex][i] != undefined) {
+                        aliens[rowIndex][i].setIsLeftmost();
+                        leftmostAliens[rowIndex] = aliens[rowIndex][i];
+                        break;
+                    }
+                }
             } else {
                 // So if no aliens left in that row can preserve row/col number alignment
-                delete leftmostAliens[rowIndex];
+                //delete leftmostAliens[rowIndex]; //todo: should be splicing instead
+                //leftmostAliens.splice(columnIndex,1);
+                leftmostAliens.splice(rowIndex,1); //not column, is row
             }
         }
         if (alien.getIsRightmost()) {
             if (aliens[rowIndex].length > 1) {
-                rightmostAliens[rowIndex] = aliens[rowIndex][columnIndex - 1];
+                // search for next rightmost alien
+                for (var j = columnIndex - 1; j >= 0; j--) {
+                    if (aliens[rowIndex][j] != undefined) {
+                        aliens[rowIndex][j].setIsRightmost();
+                        rightmostAliens[rowIndex] = aliens[rowIndex][j];
+                        break;
+                    }
+                }
             } else {
-                delete rightmostAliens[rowIndex];
+                //delete rightmostAliens[rowIndex];
+                //rightmostAliens.splice(columnIndex,1);
+                rightmostAliens.splice(rowIndex,1);
             }
         }
-        if (bottomAliens.indexOf(alien) !== -1) {
-            if (rowIndex > 1) {
-                bottomAliens[columnIndex] = aliens[rowIndex - 1][columnIndex];
+        //if (bottomAliens.indexOf(alien) !== -1) {
+        if (alien.getIsBottom()) {
+            //if (rowIndex > 1) {
+            if (rowIndex > 0) {
+                // search for next bottommost alien
+                for (var k = rowIndex - 1; k >= 0; k--) {
+                    if (aliens[k][columnIndex] != undefined) {
+                        aliens[k][columnIndex].setIsBottom();
+                        bottomAliens[columnIndex] = aliens[k][columnIndex];
+                        break;
+                    }
+                }
             } else {
+                // don't splice because need to preserve row-col relationship
                 delete bottomAliens[columnIndex];
             }
         }
@@ -349,7 +401,9 @@ function GameplayController() {
 
     function groupAlienShoot() {
         for (var i = 0; i < bottomAliens.length; i++) {
-            bottomAliens[i].shoot(alienBullets,settings.bulletWidth,settings.bulletHeight);
+            if (bottomAliens[i] != undefined) {
+                bottomAliens[i].shoot(alienBullets,settings.bulletWidth,settings.bulletHeight);
+            }
         }
     }
 

@@ -153,6 +153,7 @@ function ObjectFactory() {
         this.points = 10;
         this.isLeftmost = false;
         this.isRightmost = false;
+        this.isBottom = false;
     };
 
     Alien.prototype = new Sprite();
@@ -166,12 +167,20 @@ function ObjectFactory() {
         this.isRightmost = true;
     };
 
+    Alien.prototype.setIsBottom = function() {
+        this.isBottom = true;
+    };
+
     Alien.prototype.getIsLeftmost = function () {
         return this.isLeftmost;
     };
 
     Alien.prototype.getIsRightmost = function () {
         return this.isRightmost;
+    };
+
+    Alien.prototype.getIsBottom = function () {
+        return this.isBottom;
     };
 
     Alien.prototype.getPoints = function() {

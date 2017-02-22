@@ -4,7 +4,7 @@
  */
 function ViewController() {
     var CANVAS_WIDTH = 700;
-    var CANVAS_HEIGHT = 600;
+    var CANVAS_HEIGHT = 500;
     var canvas;
     var canvasController;
     var PresetImages = {
