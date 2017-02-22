@@ -143,25 +143,31 @@ function GameplayController() {
     }
 
     function moveAliens() {
-        // Todo: leave nextDirection undefined?
-
         // Check if any of the edge aliens will cross the canvas boundary
         // Change direction if they will
         if (alienDirection === Direction.left) {
+            previousAlienDirection = alienDirection;
             for (var i = 0; i < leftmostAliens.length; i++) {
                 if (leftmostAliens[i] != undefined) {
                     if (leftmostAliens[i].getX() - alienStepVal < leftBound) {
-                        alienDirection = Direction.right
+                        alienDirection = Direction.down;
                     }
                 }
             }
         } else if (alienDirection === Direction.right) {
+            previousAlienDirection = alienDirection;
             for (var j = 0; j < rightmostAliens.length; j++) {
                 if (rightmostAliens[j] != undefined) {
                     if (rightmostAliens[j].getX() + rightmostAliens[j].getWidth() + alienStepVal > rightBound) {
-                        alienDirection = Direction.left
+                        alienDirection = Direction.down;
                     }
                 }
+            }
+        } else if (alienDirection === Direction.down) {
+            if (previousAlienDirection === Direction.left) {
+                alienDirection = Direction.right;
+            } else {
+                alienDirection = Direction.left;
             }
         }
 
